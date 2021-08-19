@@ -1,0 +1,6 @@
+ links:
+https://www.jetbrains.com/help/pycharm/github.html
+
+https://machinelearningmastery.com/how-to-load-visualize-and-explore-a-complex-multivariate-multistep-time-series-forecasting-dataset/
+
+https://machinelearningmastery.com/multivariate-time-series-forecasting-lstms-keras/
