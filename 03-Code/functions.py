@@ -54,3 +54,10 @@ def plot_two(var1, var2, df, color1='red', color2='blue'):
     ax2 = ax.twinx()
     ax2.set_ylabel(var2, color=color2)
     ax2.plot(df['Timepoint'], df[var2], color=color2)
+
+# def add_target_variable(df, the_targer_varible):
+#     """adds a target variable at the end of dfs which belong to one group"""
+#     for df in dfs:
+#         df['target'] = the_target_variable
+#
+# def make_needed_df(dataframes, ):

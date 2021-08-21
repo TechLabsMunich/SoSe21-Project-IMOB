@@ -7,7 +7,7 @@ import datetime
 import functions as f
 
 file = '../01-Data/XLS.xls'
-df = f.make_df(file)
+# df = f.make_df(file)
 
 
 # mask = (df['Timepoint'] == 'Gesamt')
@@ -28,7 +28,7 @@ df = f.make_df(file)
 # print(df['Breathing Freq norm'].max())
 
 #plotting timepoint to heartrate
-print(df.columns)
+# print(df.columns)
 # figure, axes = plt.subplots(nrows=1, ncols=2)
 # axes[0].plot(df['Timepoint'],df['Ø(RR) (ms)'])
 # axes[1].plot(df['Timepoint'],df['Breathing (frequency) (/Min)'])
@@ -51,5 +51,9 @@ print(df.columns)
 # ax2.plot(df['Timepoint'], df['Activity'], color="blue")
 
 # f.plot_two('QTc (ms)', 'Breath depth', df)
-f.plot_two('Activity','Steps (/Min)', df)
-plt.show()
+# f.plot_two('Activity','Steps (/Min)', df)
+# plt.show()
+
+df = pd.read_excel(file)
+for column in df.columns:
+    print(column)
