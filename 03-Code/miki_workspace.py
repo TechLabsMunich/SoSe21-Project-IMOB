@@ -2,11 +2,10 @@ import os
 import pandas as pd
 import numpy as np
 
-
-
+import functions as f
 path = '/Users/Mikolaj/PycharmProjects/SoSe21-Project-IMOB/01-Data/euthyrox'
-files_list = os.listdir(path)
-path_1 = path +'/M1.xls'
+
+
 def xls_to_df(path):
     """When provided with our .xls file produces a dataframe with only one row of lists in each column.
     Columns' names stay the same."""
@@ -28,7 +27,7 @@ def xls_to_df(path):
     df2.drop(['Unnamed: 0'], axis =1, inplace =True)
     return df2
 
-print(xls_to_df(path_1))
+print(len(f.make_dataframes(path)))
 #test - how to build a DataFrame with a list as a cell
 # list_1 = [['a','b','c','d']]
 # list_2 = [['e','f','g','h']]
