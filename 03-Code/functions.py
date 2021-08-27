@@ -1,63 +1,26 @@
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
+import os
 
-
-def make_df(file):
-    """accepts the xLs file and transforms it into a tidy dataframe with undestandable variables"""
-    df = pd.read_excel(file)
-
-    wanted = ['Unnamed: 0', 'Aktivität', 'Schritte', 'Regulärer Rhythmus', 'Sinusrhythmus', '∆(NN)', 'Ø(RR)',
-              'HRV Index', 'QTc',
-              'Schlafphase', 'Atemfrequenz', 'Atemtiefe']
-
-    translation = ['Timepoint', 'Activity', 'Steps', 'Regular Heartrythm', 'Sinusrythm', '∆(NN)', 'Ø(RR)', 'HRV Index',
-                   'QTc',
-                   'Sleep-phase', 'Breathing (frequency)', 'Breath depth']
-
-    df2 = df[wanted]
-    df2.columns = translation
-    # saving units from first row and getting rid of them
-    units = df2.iloc[0]
-    df2 = df2.drop([0])
-    # creating column names with units next to them where possible
-    new_translation = []
-    counter = 0
-    units = units.fillna(0)
-    for t in translation:
-        if units[counter] != 0:
-            new_t = t + ' ' + '(' + str(units[counter]) + ')'
-            new_translation.append(new_t)
-        else:
-            new_translation.append(t)
-        counter += 1
-    df2.columns = new_translation
-    df2.reset_index(inplace=True)
-    df2.drop([0], inplace=True)
-    df2.reset_index(inplace=True)
-    df2.drop(['level_0', 'index'], axis=1, inplace=True)
-
-    df2['Timepoint'] = pd.to_datetime(df2['Timepoint'], format='%H:%M:%S')
+def xls_to_df(path):
+    """When provided with our .xls file produces a dataframe with only one row of lists in each column.
+    Columns' names stay the same."""
+    #prepare old the starter dataframe
+    df = pd.read_excel(path)
+    df.drop([0], inplace=True)
+    df.reset_index(inplace=True)
+    df.drop(['index'],axis=1, inplace=True)
+    #start making the wanted dataframe
+    d = {}
+    for c in df.columns:
+        #this is a weird way of getting to the goal. It is a list in a list but it does not work otherwise for me.
+        l = []
+        l.append(df[c].tolist())
+        d[c] = l
+    df2 = pd.DataFrame(d)
+    df2.columns = df.columns
+    #dropping the time column
+    df2.drop(['Unnamed: 0'], axis =1, inplace =True)
     return df2
 
-def z_normalize(series, df):
-    """does Z-Score normalization on a series and adds this column to df"""
-    n = (series - series.mean()) / series.std()
-    df[f'{series.name} norm'] = n
-
-def plot_two(var1, var2, df, color1='red', color2='blue'):
-    """plots 2 variables with different scales, against time, on the same plot"""
-    fig, ax = plt.subplots()
-    ax.plot(df['Timepoint'], df[var1], color=color1)
-    ax.set_xlabel("tempus fugit")
-    ax.set_ylabel(var1, color=color1)
-    ax2 = ax.twinx()
-    ax2.set_ylabel(var2, color=color2)
-    ax2.plot(df['Timepoint'], df[var2], color=color2)
-
-# def add_target_variable(df, the_targer_varible):
-#     """adds a target variable at the end of dfs which belong to one group"""
-#     for df in dfs:
-#         df['target'] = the_target_variable
-#
-# def make_needed_df(dataframes, ):
