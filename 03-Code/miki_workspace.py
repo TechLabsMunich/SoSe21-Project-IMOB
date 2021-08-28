@@ -3,31 +3,12 @@ import pandas as pd
 import numpy as np
 
 import functions as f
-path = '/Users/Mikolaj/PycharmProjects/SoSe21-Project-IMOB/01-Data/euthyrox'
+path = '/Users/Mikolaj/PycharmProjects/SoSe21-Project-IMOB/01-Data/euthyrox/M2.xls'
+
+df = pd.read_excel(path)
+print(df)
 
 
-def xls_to_df(path):
-    """When provided with our .xls file produces a dataframe with only one row of lists in each column.
-    Columns' names stay the same."""
-    #prepare old the starter dataframe
-    df = pd.read_excel(path)
-    df.drop([0], inplace=True)
-    df.reset_index(inplace=True)
-    df.drop(['index'],axis=1, inplace=True)
-    #start making the wanted dataframe
-    d = {}
-    for c in df.columns:
-        #this is a weird way of getting to the goal. It is a list in a list but it does not work otherwise for me.
-        l = []
-        l.append(df[c].tolist())
-        d[c] = l
-    df2 = pd.DataFrame(d)
-    df2.columns = df.columns
-    #dropping the time column
-    df2.drop(['Unnamed: 0'], axis =1, inplace =True)
-    return df2
-
-print(len(f.make_dataframes(path)))
 #test - how to build a DataFrame with a list as a cell
 # list_1 = [['a','b','c','d']]
 # list_2 = [['e','f','g','h']]

@@ -34,8 +34,10 @@ def make_dataframes(directory_path):
     files_list.sort()
     for filename in files_list:
         #no idea why it does not work. gives OverflowError
-        file_path = directory_path+'/'+filename
-        df = xls_to_df(file_path)
-        dataframes.append(df)
-
+        try:
+            file_path = directory_path+'/'+filename
+            df = xls_to_df(file_path)
+            dataframes.append(df)
+        except OverflowError:
+            continue
     return dataframes
