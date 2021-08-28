@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 import os
 
 
-def xls_to_df(path):
+def _xls_to_df(path):
     """When provided with our .xls file produces a dataframe with only one row of lists in each column.
     Columns' names stay the same."""
     #prepare old the starter dataframe
@@ -36,10 +36,42 @@ def make_dataframes(directory_path):
         #no idea why it does not work. gives OverflowError
         try:
             file_path = directory_path+'/'+filename
-            df = xls_to_df(file_path)
+            df = _xls_to_df(file_path)
             dataframes.append(df)
         except OverflowError:
             continue
         #print function just for debugging purposes to see which files are going through and which do not
-        print(filename)
+        # print(filename)
     return dataframes
+
+def merge_dataframes(dataframes, target_var):
+    """provided a list of dataframes and name of target variable creates one concated dataframe with additional column target"""
+    new_df = pd.concat(dataframes, ignore_index = True)
+    new_df['Target'] = target_var
+    return new_df
+
+def merge_sets(dataframes):
+    """concats dataframes from different drug groups"""
+    new_df = pd.concat(dataframes, ignore_index = True)
+    return new_df
+
+
+
+def create_X_y(directory_path):
+    """given data directory path returns a data set in form of X and y variables, where X is the big Dataframe with
+     independent variables and y is a Series with target variables"""
+    folder_list = os.listdir(directory_path)
+    merged_dataframes =[]
+    for folder in folder_list:
+        #in case there are some normal or hidden files in the data_directory
+        try:
+            small_dataframes = make_dataframes(directory_path+'/'+folder)
+            merged_dataframe = merge_dataframes(small_dataframes, folder)
+            merged_dataframes.append(merged_dataframe)
+        except NotADirectoryError:
+            continue
+    big_df = merge_sets(merged_dataframes)
+    y = big_df['Target']
+    X = big_df.drop(['Target'], axis=1)
+
+    return X, y
