@@ -40,4 +40,6 @@ def make_dataframes(directory_path):
             dataframes.append(df)
         except OverflowError:
             continue
+        #print function just for debugging purposes to see which files are going through and which do not
+        print(filename)
     return dataframes
