@@ -1,7 +1,3 @@
-import os
-import pandas as pd
-import numpy as np
-
 import functions as f
 path = '/Users/Mikolaj/PycharmProjects/SoSe21-Project-IMOB/01-Data'
 
