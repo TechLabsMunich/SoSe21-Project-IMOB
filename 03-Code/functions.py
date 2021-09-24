@@ -87,7 +87,6 @@ def pick_target(df, target):
     return target_var_df
 
 
-
 def create_X_y(data_directory_path, ID_file_path, target_var):
     """given data directory path returns a data set in form of X and y variables, where X is the big Dataframe with
      independent variables and y is a Series with target variables"""
@@ -101,13 +100,3 @@ def create_X_y(data_directory_path, ID_file_path, target_var):
     X = big_df.drop([target_var, 'ID'], axis=1)
     return X,y
 
-X, y = create_X_y('../01-Data/sample_data',"../01-Data/new data's IDs.xlsx", 'Ruhepuls')
-
-print(X)
-print(y)
-
-
-# def merge_sets(dataframes):
-#     """concats dataframes from different drug groups"""
-#     new_df = pd.concat(dataframes, ignore_index = True)
-#     return new_df
