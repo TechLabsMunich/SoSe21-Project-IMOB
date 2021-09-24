@@ -3,7 +3,6 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import os
 
-# target_var_file_path = "../01-Data/new data's IDs.xlsx"
 def create_target_var_df(path):
     """creates target var df from which one can later pick the target he wants and merge it to final df"""
     data_id = pd.read_excel(path)
@@ -67,46 +66,48 @@ def make_dataframes(directory_path):
     """given directory path with xls files, creates a list of dataframes that we need"""
     dataframes = []
     files_list = os.listdir(directory_path)
-    files_list.sort()
-    for filename in files_list:
-        file_path = directory_path+'/'+filename
-        df = _xls_to_df(file_path)
+    for f in files_list:
+        df = _xls_to_df(directory_path+'/'+f)
         dataframes.append(df)
+
     return dataframes
 
 
-def merge_dataframes(dataframes, target_var_df, target_var):
+def merge_dataframes(dataframes):
     """provided a list of dataframes and name of target variable creates one concated dataframe with additional column target"""
     new_df = pd.concat(dataframes, ignore_index = True)
-    small_target_var_df = target_var_df[['ID', target_var]]
-    new_df = new_df.merge(small_targer_var_df, on='ID')
+    new_df.sort_values(by=['ID'], inplace=True)
+    new_df = new_df.reset_index()
+    new_df.drop(['index'], axis=1, inplace=True)
     return new_df
+
+def pick_target(df, target):
+    """creates a small df with only one column from id file which will serve as a target variable"""
+    target_var_df = df[['ID', target]]
+    return target_var_df
+
+
+
+def create_X_y(data_directory_path, ID_file_path, target_var):
+    """given data directory path returns a data set in form of X and y variables, where X is the big Dataframe with
+     independent variables and y is a Series with target variables"""
+    df_2 = create_target_var_df(ID_file_path)
+    target_df = pick_target(df_2, target_var)
+    dataframes = make_dataframes(data_directory_path)
+    df_1 = merge_dataframes(dataframes)
+    big_df = df_1.merge(target_df, on='ID')
+
+    y = big_df[target_var]
+    X = big_df.drop([target_var, 'ID'], axis=1)
+    return X,y
+
+X, y = create_X_y('../01-Data/sample_data',"../01-Data/new data's IDs.xlsx", 'Ruhepuls')
+
+print(X)
+print(y)
 
 
 # def merge_sets(dataframes):
 #     """concats dataframes from different drug groups"""
 #     new_df = pd.concat(dataframes, ignore_index = True)
 #     return new_df
-
-
-def create_X_y(directory_path):
-    """given data directory path returns a data set in form of X and y variables, where X is the big Dataframe with
-     independent variables and y is a Series with target variables"""
-    folder_list = os.listdir(directory_path)
-    merged_dataframes =[]
-    for folder in folder_list:
-        #in case there are some normal or hidden files in the data_directory
-        try:
-            small_dataframes = make_dataframes(directory_path+'/'+folder)
-            merged_dataframe = merge_dataframes(small_dataframes, folder)
-            merged_dataframes.append(merged_dataframe)
-        except NotADirectoryError:
-            continue
-    big_df = merge_sets(merged_dataframes)
-    y = big_df['Target']
-    X = big_df.drop(['Target'], axis=1)
-
-    return X, y
-
-z = make_dataframes('../01-Data/new_data')
-print(z)

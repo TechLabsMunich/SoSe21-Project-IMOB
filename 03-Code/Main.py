@@ -1,7 +1,13 @@
 import functions as f
-path = '/Users/Mikolaj/PycharmProjects/SoSe21-Project-IMOB/01-Data'
 
-X, y = f.create_X_y(path)
-print(X)
-print(y)
+#GETTING THE X AND Y PART:
+
+data_path = '../01-Data/sample_data'
+id_path = "../01-Data/new data's IDs.xlsx"
+target_variable = 'Ruhepuls'
+
+X, y = f.create_X_y(data_path, id_path, target_variable)
+
+#MACHINE LEARNING PART:
+
 
