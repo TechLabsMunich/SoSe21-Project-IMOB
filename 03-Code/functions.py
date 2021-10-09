@@ -2,27 +2,6 @@ import numpy as np
 import pandas as pd
 import os
 
-def create_target_var_df(path):
-    """creates target var df from which one can later pick the target he wants and merge it to final df"""
-    data_id = pd.read_excel(path)
-    data_id.dropna(subset=['ID'], inplace=True)
-    # dealing with dumb P's
-    better_ids = []
-    for x in data_id['ID']:
-        l = list(x)
-        del l[0]
-        s = ('').join(l)
-        n = int(s)
-        better_ids.append(n)
-    data_id['ID'] = better_ids
-    # sorting the table
-    data_id.sort_values(by=['ID'], inplace=True)
-    data_id = data_id.reset_index()
-    data_id.drop(['index'], axis=1, inplace=True)
-
-    return data_id
-
-
 def _xls_to_df(path):
     """When provided with our .xls file produces a dataframe with only one row of lists in each column.
     Columns' names stay the same."""
@@ -34,7 +13,7 @@ def _xls_to_df(path):
     #start making the wanted dataframe
     d = {}
     for c in df.columns:
-        #this is a weird way of getting to the goal. It is a list in a list but it does not work otherwise for me.
+        #this is a weird way of getting to the goal. It is a list in a list but it does not work otherwise.
         l = []
         l.append(df[c].tolist())
         d[c] = l
@@ -62,7 +41,7 @@ def _xls_to_df(path):
 
 
 def make_dataframes(directory_path):
-    """given directory path with xls files, creates a list of dataframes that we need"""
+    """given directory path with xls files, creates a list of dataframes using _xls_to_df() function"""
     dataframes = []
     files_list = os.listdir(directory_path)
     for f in files_list:
@@ -80,6 +59,26 @@ def merge_dataframes(dataframes):
     new_df.drop(['index'], axis=1, inplace=True)
     return new_df
 
+def _create_target_var_df(path):
+    """creates target var df from which one can later pick the target he wants and merge it to final df"""
+    data_id = pd.read_excel(path)
+    data_id.dropna(subset=['ID'], inplace=True)
+    # dealing with dumb P's
+    better_ids = []
+    for x in data_id['ID']:
+        l = list(x)
+        del l[0]
+        s = ('').join(l)
+        n = int(s)
+        better_ids.append(n)
+    data_id['ID'] = better_ids
+    # sorting the table
+    data_id.sort_values(by=['ID'], inplace=True)
+    data_id = data_id.reset_index()
+    data_id.drop(['index'], axis=1, inplace=True)
+
+    return data_id
+
 def pick_target(df, target):
     """creates a small df with only one column from id file which will serve as a target variable"""
     target_var_df = df[['ID', target]]
@@ -89,7 +88,7 @@ def pick_target(df, target):
 def create_X_y(data_directory_path, ID_file_path, target_var):
     """given data directory path returns a data set in form of X and y variables, where X is the big Dataframe with
      independent variables and y is a Series with target variables"""
-    df_2 = create_target_var_df(ID_file_path)
+    df_2 = _create_target_var_df(ID_file_path)
     target_df = pick_target(df_2, target_var)
     dataframes = make_dataframes(data_directory_path)
     df_1 = merge_dataframes(dataframes)

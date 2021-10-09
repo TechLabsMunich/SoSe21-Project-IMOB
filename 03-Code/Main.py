@@ -41,6 +41,7 @@ clf = Pipeline(steps)
 clf.fit(X_train, y_train)
 print(clf.score(X_test, y_test))
 
+#2nd method to use later
 #column ensambling
 
 # clf = ColumnEnsembleClassifier(
