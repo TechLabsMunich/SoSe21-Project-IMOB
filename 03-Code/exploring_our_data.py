@@ -5,4 +5,12 @@ from matplotlib import pyplot as plt
 import os
 import itertools
 
-file = '../01-Data/new_data/P1.xlsx'
+file = "../01-Data/new data's IDs.xlsx"
+interesting_variables = ['Alter ', 'Gewicht', 'Größe']
+
+df = f._create_target_var_df(file)
+df_2 = df[interesting_variables]
+median = df_2['Alter '].median()
+df_2['Alter > 49'] =
+# df_2['age_decade'] = (df_2['Alter ']//10)*10
+# df_2['weight_decade'] = (df_2['Gewicht']//10)*10
