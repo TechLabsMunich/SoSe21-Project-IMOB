@@ -29,6 +29,8 @@ from sklearn.metrics import roc_curve
 from sklearn.metrics import f1_score
 from sklearn.model_selection import GridSearchCV
 
+from sktime.forecasting.model_selection import ForecastingGridSearchCV
+
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
 print(X_train.shape, y_train.shape, X_test.shape, y_test.shape)
 
@@ -38,32 +40,32 @@ print(X_train.head())
 # multi-class target variable
 print(np.unique(y_train))
 
+
 #time series concatenation
 steps = [
     ("concatenate", ColumnConcatenator()),
-    ("classify", TimeSeriesForestClassifier(n_estimators=100, n_jobs=-1)),
+    ("classify", TimeSeriesForestClassifier(n_estimators=10, n_jobs=-1)),
 ]
-model = Pipeline(steps)
-parameters = {'n_estimators':(10,50,100,200), 'criterion':('gini', 'entropy'), 'max_depth':(5, 10, 50)}
-clf = GridSearchCV(model, parameters, scoring='f1', n_jobs=-1)
+clf = Pipeline(steps)
+
+# clf = GridSearchCV(model, parameters, scoring='f1', n_jobs=-1)
 clf.fit(X_train, y_train)
-best_params = clf.get_params()
-print(best_params)
+
 score = clf.score(X_test, y_test)
 y_pred = clf.predict(X_test)
-tn, fp, fn, tp = confusion_matrix(y_test, y_pred, average='micro').ravel()
+#tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
 # precision = tp/(tp+fp)
-precision = precision_score(y_test, y_pred, average='micro')
-recall = recall_score(y_test, y_pred, average='micro')
+precision = precision_score(y_test, y_pred)
+recall = recall_score(y_test, y_pred)
 #ballanced f-score
 # f_1 = 2*(precision*recall)/(precision+recall)
-f_1 = f1_score(y_test, y_pred, average='micro')
+f_1 = f1_score(y_test, y_pred)
 
 print(f'f1 score: {f_1}')
 print(f'precision: {precision}')
 print(f'recall: {recall}')
 print(f'score: {score}')
-print(f'tn, fp, fn, tp: {tn}, {fp}, {fn}, {tp}')
+
 
 
 

@@ -15,4 +15,5 @@ from sktime.datatypes._panel._convert import (
 # for c in df.columns:
 #     print(f'{c}={c.d_type()}')
 
-print(f._create_target_var_df("../01-Data/new data's IDs.xlsx")['Alter '])
+# print(f._create_target_var_df("../01-Data/new data's IDs.xlsx")['Alter '])
+print(f.find_columns_to_ditch('../01-Data/new_data'))

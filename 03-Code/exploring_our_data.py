@@ -26,3 +26,4 @@ print(median)
 #         df_2['Alter>49'] = 1
 # df_2['age_decade'] = (df_2['Alter ']//10)*10
 # df_2['weight_decade'] = (df_2['Gewicht']//10)*10
+

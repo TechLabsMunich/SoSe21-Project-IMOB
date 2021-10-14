@@ -16,22 +16,37 @@ settings = Settings()
 def _xls_to_df(path):
     """When provided with our .xls file produces a dataframe with only one row of lists in each column.
     Columns' names stay the same."""
+    columns_to_ditch = ['RSA Energie', 'ST@60ms(#2)', 'ST@60ms(#3)', 'Ø(vPM-R)', 'ST@80ms(#2).1', 'Ø(aPM-vPM)',
+                        'Atemfrequenz(RSA)',
+                        'QPA(RSA)', 'ST@60ms(#1).1', 'Ø(aPM-R)', 'ST@80ms(#3).1', 'QPA Arretierung', 'ST@80ms(#2)',
+                        'ST@80ms(#1)',
+                        'ST@60ms(#3).1', 'ST@60ms(#1)', 'ST@60ms(#2).1', '%v/Paced', 'ST@80ms(#3)', 'CO2 Regulation',
+                        'ØPQ', '%dc/Paced',
+                        '%a/Paced', 'ØQT', 'BP Regulation', 'QTc', 'ST@80ms(#1).1']
     #prepare starter dataframe
-    df = pd.read_excel(path)
+    df = pd.read_excel(path, sheet_name=0)
     df.drop([0], inplace=True)
     df.reset_index(inplace=True)
     df.drop(['index'],axis=1, inplace=True)
     df.drop(['Unnamed: 0'], axis =1, inplace =True)
+    df.drop(columns = columns_to_ditch, axis=1, inplace =True)
     #make it of a standard length
     df = df[0:settings.standard_length]
     #fill columns which have less nans than amount stated in Settings
     for column in df.columns:
-        if (df[column].isna().sum() <= settings.nan_limit) and (df[column].isna().sum()>0):
+        if (df[column].isna().sum() > 0):
             df[column].ffill(inplace=True)
             #dealing with the eventual nans on the top of the columns
             df[column].bfill(inplace=True)
     #change data type to float64 in every column
-    df = df.astype(np.float64)
+
+    #ditch columns
+    df=df.round(5)
+    df = df.astype(np.float32)
+    missing_values = df.isna().sum().sum()
+    print(path)
+    print(missing_values)
+    print('-----------')
 
     #start making the wanted nested dataframe
     X_nested = from_2d_array_to_nested(df.transpose())
@@ -102,6 +117,7 @@ def make_dataframes(directory_path):
     dataframes = []
     files_list = os.listdir(directory_path)
     for f in files_list:
+        print(directory_path+'/'+f)
         df = _xls_to_df(directory_path+'/'+f)
         dataframes.append(df)
 
@@ -135,7 +151,9 @@ def _create_target_var_df(path):
     data_id = data_id.reset_index()
     data_id.drop(['index'], axis=1, inplace=True)
     data_id['Alter>median'] = data_id['Alter '] >= settings.age_median
+    data_id['Alter>median'] *=1
     data_id['Weight>median'] = data_id['Gewicht'] >= settings.weight_median
+    data_id['Weight>median'] *= 1
     return data_id
 
 def pick_target(df, target):
@@ -151,13 +169,13 @@ def create_X_y(data_directory_path, ID_file_path, target_var):
     df_2 = _create_target_var_df(ID_file_path)
     target_df = pick_target(df_2, target_var)
     #find which columns to ditch
-    columns_to_ditch = find_columns_to_ditch(data_directory_path)
+    #columns_to_ditch = find_columns_to_ditch(data_directory_path)
     #create many one liners dataframes
     dataframes = make_dataframes(data_directory_path)
     #merge the dataframes with each other
     df_1 = merge_dataframes(dataframes)
     #ditch the columns from df_1
-    ditch_columns(df_1, columns_to_ditch)
+    #ditch_columns(df_1, columns_to_ditch)
     #concat big dataframe with dataframe containing target variables
     big_df = df_1.merge(target_df, on='ID')
     #define what is indpendent what is target variables
