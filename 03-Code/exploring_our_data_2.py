@@ -10,6 +10,7 @@ from sktime.datatypes._panel._convert import (
 )
 
 df = f._xls_to_df("../01-Data/new_data/P1.xlsx")
-
-for c in df.columns:
-    print(f'{c} = {df[c].isna().sum()}')
+for type in df.dtypes:
+    print(type)
+# for c in df.columns:
+#     print(f'{c}={c.d_type()}')

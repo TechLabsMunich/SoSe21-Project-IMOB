@@ -30,6 +30,8 @@ def _xls_to_df(path):
             df[column].ffill(inplace=True)
             #dealing with the eventual nans on the top of the columns
             df[column].bfill(inplace=True)
+    #change data type to float64 in every column
+    df = df.astype(np.float64)
 
     #start making the wanted nested dataframe
     X_nested = from_2d_array_to_nested(df.transpose())
