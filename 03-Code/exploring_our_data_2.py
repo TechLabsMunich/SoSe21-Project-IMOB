@@ -9,8 +9,10 @@ from sktime.datatypes._panel._convert import (
     is_nested_dataframe,
 )
 
-df = f._xls_to_df("../01-Data/new_data/P1.xlsx")
-for type in df.dtypes:
-    print(type)
+# df = f._xls_to_df("../01-Data/new_data/P1.xlsx")
+# for type in df.dtypes:
+#     print(type)
 # for c in df.columns:
 #     print(f'{c}={c.d_type()}')
+
+print(f._create_target_var_df("../01-Data/new data's IDs.xlsx")['Alter '])

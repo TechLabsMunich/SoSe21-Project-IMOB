@@ -2,9 +2,9 @@ import functions as f
 
 #GETTING THE X AND Y PART:
 
-data_path = '../01-Data/sample_data'
+data_path = '../01-Data/new_data'
 id_path = "../01-Data/new data's IDs.xlsx"
-target_variable = 'Alter>49'
+target_variable = 'Alter>median'
 
 X, y = f.create_X_y(data_path, id_path, target_variable)
 print(X)
@@ -45,7 +45,7 @@ steps = [
 ]
 model = Pipeline(steps)
 parameters = {'n_estimators':(10,50,100,200), 'criterion':('gini', 'entropy'), 'max_depth':(5, 10, 50)}
-clf = GridSearchCV(model, parameters, scoring='f1')
+clf = GridSearchCV(model, parameters, scoring='f1', n_jobs=-1)
 clf.fit(X_train, y_train)
 best_params = clf.get_params()
 print(best_params)

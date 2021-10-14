@@ -135,7 +135,7 @@ def _create_target_var_df(path):
     data_id = data_id.reset_index()
     data_id.drop(['index'], axis=1, inplace=True)
     data_id['Alter>median'] = data_id['Alter '] >= settings.age_median
-    data_id['Weight>median'] = data_id['Weight'] >= settings.weight_median
+    data_id['Weight>median'] = data_id['Gewicht'] >= settings.weight_median
     return data_id
 
 def pick_target(df, target):
