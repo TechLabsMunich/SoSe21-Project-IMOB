@@ -1,6 +1,14 @@
 import numpy as np
 import pandas as pd
 import os
+import itertools
+
+#imports for nesting the dataframe
+from sktime.datatypes._panel._convert import (
+    from_2d_array_to_nested,
+    from_nested_to_2d_array,
+    is_nested_dataframe,
+)
 
 def _xls_to_df(path):
     """When provided with our .xls file produces a dataframe with only one row of lists in each column.
@@ -10,17 +18,16 @@ def _xls_to_df(path):
     df.drop([0], inplace=True)
     df.reset_index(inplace=True)
     df.drop(['index'],axis=1, inplace=True)
-    #start making the wanted dataframe
-    d = {}
-    for c in df.columns:
-        #this is a weird way of getting to the goal. It is a list in a list but it does not work otherwise.
-        l = []
-        l.append(df[c].tolist())
-        d[c] = l
-    df2 = pd.DataFrame(d)
-    df2.columns = df.columns
-    #dropping the time column
-    df2.drop(['Unnamed: 0'], axis =1, inplace =True)
+    df.drop(['Unnamed: 0'], axis =1, inplace =True)
+
+    #start making the wanted nested dataframe
+    X_nested = from_2d_array_to_nested(df.transpose())
+    X_nested = X_nested.transpose()
+    #test the nesting of the dataframe
+    # print(f"X_nested is a nested DataFrame: {is_nested_dataframe(X_nested)}")
+    # print(f"The cell contains a {type(X_nested.iloc[0, 0])}.")
+    # print(f"The nested DataFrame has shape {X_nested.shape}")
+    X_nested.columns = df.columns
 
     #putting in ID column from name of the file
     path_list = path.split('/')
@@ -32,12 +39,12 @@ def _xls_to_df(path):
     s = ('').join(l)
     n=int(s)
     new_columns = ['ID']
-    for a in df2.columns:
+    for a in X_nested.columns:
         new_columns.append(a)
-    df2['ID'] = n
-    df2=df2.reindex(columns = new_columns)
+    X_nested['ID'] = n
+    X_nested=X_nested.reindex(columns = new_columns)
 
-    return df2
+    return X_nested
 
 
 def make_dataframes(directory_path):
@@ -60,8 +67,9 @@ def merge_dataframes(dataframes):
     return new_df
 
 def _create_target_var_df(path):
-    """creates target var df from which one can later pick the target he wants and merge it to final df"""
+    """creates target var dataframe from which one can later pick the target he wants and merge it to final df"""
     data_id = pd.read_excel(path)
+    #dropping completely empty rows
     data_id.dropna(subset=['ID'], inplace=True)
     # dealing with dumb P's
     better_ids = []
@@ -88,13 +96,19 @@ def pick_target(df, target):
 def create_X_y(data_directory_path, ID_file_path, target_var):
     """given data directory path returns a data set in form of X and y variables, where X is the big Dataframe with
      independent variables and y is a Series with target variables"""
+    #create one colum of target variable
     df_2 = _create_target_var_df(ID_file_path)
     target_df = pick_target(df_2, target_var)
+    #create many one liners dataframes
     dataframes = make_dataframes(data_directory_path)
+    #merge the dataframes with each other
     df_1 = merge_dataframes(dataframes)
+    #concat big dataframe with dataframe containing target variables
     big_df = df_1.merge(target_df, on='ID')
 
+    #define what is indpendent what is target variables
     y = big_df[target_var]
     X = big_df.drop([target_var, 'ID'], axis=1)
+
     return X,y
 

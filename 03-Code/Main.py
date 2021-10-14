@@ -9,6 +9,8 @@ target_variable = 'Ruhepuls'
 X, y = f.create_X_y(data_path, id_path, target_variable)
 print(X)
 print(y)
+print(X.iloc[0,0])
+
 
 
 #MACHINE LEARNING PART:
@@ -35,20 +37,8 @@ print(np.unique(y_train))
 #time series concatenation
 steps = [
     ("concatenate", ColumnConcatenator()),
-    ("classify", TimeSeriesForestClassifier(n_estimators=100)),
+    ("classify", TimeSeriesForestClassifier(n_estimators=100, n_jobs=-1)),
 ]
 clf = Pipeline(steps)
 clf.fit(X_train, y_train)
 print(clf.score(X_test, y_test))
-
-#2nd method to use later
-#column ensambling
-
-# clf = ColumnEnsembleClassifier(
-#     estimators=[
-#         ("TSF0", TimeSeriesForestClassifier(n_estimators=100), [0]),
-#         ("BOSSEnsemble3", BOSSEnsemble(max_ensemble_size=5), [3]),
-#     ]
-# )
-# clf.fit(X_train, y_train)
-# clf.score(X_test, y_test)
