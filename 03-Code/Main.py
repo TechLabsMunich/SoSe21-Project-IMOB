@@ -4,7 +4,7 @@ import functions as f
 
 data_path = '../01-Data/sample_data'
 id_path = "../01-Data/new data's IDs.xlsx"
-target_variable = 'Geschlecht m=0,w=1'
+target_variable = 'Alter>49'
 
 X, y = f.create_X_y(data_path, id_path, target_variable)
 print(X)
@@ -60,6 +60,10 @@ recall = recall_score(y_test, y_pred, average='micro')
 f_1 = f1_score(y_test, y_pred, average='micro')
 
 print(f'f1 score: {f_1}')
+print(f'precision: {precision}')
+print(f'recall: {recall}')
+print(f'score: {score}')
+print(f'tn, fp, fn, tp: {tn}, {fp}, {fn}, {tp}')
 
 
 

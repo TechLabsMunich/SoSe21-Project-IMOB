@@ -10,10 +10,15 @@ interesting_variables = ['Alter ', 'Gewicht', 'Größe']
 
 df = f._create_target_var_df(file)
 df_2 = df[interesting_variables]
-median = df_2['Alter '].median()
-ja_nein = [df_2['Alter '] > median]
-df_2['Alter>49'] = ja_nein
-print(df_2['Alter>49'])
+median = df_2['Gewicht'].median()
+print(median)
+
+
+# df_2['Alter>49'] = df_2['Alter '] >= median
+# # if [df_2['Alter '] > median]:
+# #     df_2['Alter>49'] =1
+#
+# print(df_2['Alter>49'])
 # df_2['Alter>49']
 # print(df_2['Alter>49'])
 # for x in df_2['Alter ']:

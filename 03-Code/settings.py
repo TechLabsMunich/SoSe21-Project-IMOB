@@ -4,3 +4,4 @@ class Settings:
         self.nan_limit = 300
         self.standard_length = 2700
         self.age_median = 49
+        self.weight_median = 75
