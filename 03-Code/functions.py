@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import os
 import itertools
+from settings import Settings
 
 #imports for nesting the dataframe
 from sktime.datatypes._panel._convert import (
@@ -9,6 +10,8 @@ from sktime.datatypes._panel._convert import (
     from_nested_to_2d_array,
     is_nested_dataframe,
 )
+
+settings = Settings()
 
 def _xls_to_df(path):
     """When provided with our .xls file produces a dataframe with only one row of lists in each column.
@@ -19,6 +22,14 @@ def _xls_to_df(path):
     df.reset_index(inplace=True)
     df.drop(['index'],axis=1, inplace=True)
     df.drop(['Unnamed: 0'], axis =1, inplace =True)
+    #make it of a standard length
+    df = df[0:settings.standard_length]
+    #fill columns which have less nans than amount stated in Settings
+    for column in df.columns:
+        if (df[column].isna().sum() <= settings.nan_limit) and (df[column].isna().sum()>0):
+            df[column].ffill(inplace=True)
+            #dealing with the eventual nans on the top of the columns
+            df[column].bfill(inplace=True)
 
     #start making the wanted nested dataframe
     X_nested = from_2d_array_to_nested(df.transpose())
@@ -45,6 +56,43 @@ def _xls_to_df(path):
     X_nested=X_nested.reindex(columns = new_columns)
 
     return X_nested
+
+
+#dealing with large NaNs
+def find_columns_to_ditch(directory):
+    """depending on the files there will be different columns to ditch. It filters for names of any column in the
+    folder where NaN was above 300"""
+    columns_to_ditch_multiple = []
+    folder_path = '../01-Data/'+'/'+directory
+    files = os.listdir(folder_path)
+    for file in files:
+        filepath = folder_path +'/'+ file
+
+        df = pd.read_excel(filepath)
+
+        df.drop([0], inplace=True)
+        df.reset_index(inplace=True)
+        df.drop(['index'], axis=1, inplace=True)
+        df.drop([0], inplace=True)
+        df.reset_index(inplace=True)
+        df.drop(['index'], axis=1, inplace=True)
+
+        number_of_nans = {}
+        columns_to_ditch = []
+        for column in df.columns:
+            number_of_nans[column] = df[column].isna().sum()
+            if number_of_nans[column] > settings.nan_limit:
+                columns_to_ditch.append(column)
+        columns_to_ditch_multiple.append(columns_to_ditch)
+    merged = list(itertools.chain.from_iterable(columns_to_ditch_multiple))
+    merged_set = set(merged)
+    merged_list = list(merged_set)
+    return merged_list
+
+
+def ditch_columns(df, columns_to_ditch):
+    """ditches columns from provided list"""
+    df.drop(columns_to_ditch, axis=1, inplace=True)
 
 
 def make_dataframes(directory_path):
@@ -99,13 +147,16 @@ def create_X_y(data_directory_path, ID_file_path, target_var):
     #create one colum of target variable
     df_2 = _create_target_var_df(ID_file_path)
     target_df = pick_target(df_2, target_var)
+    #find which columns to ditch
+    columns_to_ditch = find_columns_to_ditch(data_directory_path)
     #create many one liners dataframes
     dataframes = make_dataframes(data_directory_path)
     #merge the dataframes with each other
     df_1 = merge_dataframes(dataframes)
+    #ditch the columns from df_1
+    ditch_columns(df_1, columns_to_ditch)
     #concat big dataframe with dataframe containing target variables
     big_df = df_1.merge(target_df, on='ID')
-
     #define what is indpendent what is target variables
     y = big_df[target_var]
     X = big_df.drop([target_var, 'ID'], axis=1)

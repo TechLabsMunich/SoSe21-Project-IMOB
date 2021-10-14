@@ -9,4 +9,7 @@ from sktime.datatypes._panel._convert import (
     is_nested_dataframe,
 )
 
-print(f._xls_to_df('../01-Data/sample_data/P1.xlsx'))
+df = f._xls_to_df("../01-Data/new_data/P1.xlsx")
+
+for c in df.columns:
+    print(f'{c} = {df[c].isna().sum()}')

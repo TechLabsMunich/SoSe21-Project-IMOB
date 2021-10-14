@@ -4,12 +4,12 @@ import functions as f
 
 data_path = '../01-Data/sample_data'
 id_path = "../01-Data/new data's IDs.xlsx"
-target_variable = 'Ruhepuls'
+target_variable = 'Geschlecht m=0,w=1'
 
 X, y = f.create_X_y(data_path, id_path, target_variable)
 print(X)
 print(y)
-print(X.iloc[0,0])
+# print(X.iloc[0,0])
 
 
 
