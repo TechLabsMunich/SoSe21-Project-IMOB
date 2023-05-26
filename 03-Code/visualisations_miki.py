@@ -6,8 +6,10 @@ import datetime
 
 import functions as f
 
-file = '../01-Data/XLS.xls'
-# df = f.make_df(file)
+file_1 = '../01-Data/archiv/P1.xlsx'
+file_2 = '../01-Data/archiv/P2.xlsx'
+df_1 = pd.read_excel(file_1)
+df_2 = pd.read_excel(file_2)
 
 
 # mask = (df['Timepoint'] == 'Gesamt')
@@ -39,7 +41,8 @@ file = '../01-Data/XLS.xls'
 # fig4 = df.plot('Timepoint', 'Steps (/Min)')
 # f.z_normalize(df['Steps (/Min)'], df)
 
-# fig5 = df.plot('Timepoint', ['Breathing Freq norm', 'Steps (/Min) norm'])
+fig5 = df_1.plot('Timepoint', ['Breathing Freq norm', 'Steps (/Min) norm'])
+plt.show()
 # df.plot('Timepoint','Activity')
 
 # fig, ax = plt.subplots()
@@ -53,7 +56,3 @@ file = '../01-Data/XLS.xls'
 # f.plot_two('QTc (ms)', 'Breath depth', df)
 # f.plot_two('Activity','Steps (/Min)', df)
 # plt.show()
-
-df = pd.read_excel(file)
-for column in df.columns:
-    print(column)

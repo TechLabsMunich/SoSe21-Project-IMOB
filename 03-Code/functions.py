@@ -44,9 +44,9 @@ def _xls_to_df(path):
     df=df.round(5)
     df = df.astype(np.float32)
     missing_values = df.isna().sum().sum()
-    print(path)
-    print(missing_values)
-    print('-----------')
+    # print(path)
+    # print(missing_values)
+    # print('-----------')
 
     #start making the wanted nested dataframe
     X_nested = from_2d_array_to_nested(df.transpose())

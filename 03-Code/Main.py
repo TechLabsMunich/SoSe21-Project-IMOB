@@ -4,11 +4,10 @@ import functions as f
 
 data_path = '../01-Data/sample_data'
 id_path = "../01-Data/new data's IDs.xlsx"
-target_variable = 'Weight>median'
+target_variable = 'Alter>median'
 
 X, y = f.create_X_y(data_path, id_path, target_variable)
-print(X)
-print(y)
+
 
 #MACHINE LEARNING PART:
 import numpy as np
@@ -32,19 +31,19 @@ from sklearn.model_selection import GridSearchCV
 from sktime.forecasting.model_selection import ForecastingGridSearchCV
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
-print(X_train.shape, y_train.shape, X_test.shape, y_test.shape)
+# print(X_train.shape, y_train.shape, X_test.shape, y_test.shape)
 
 #  multivariate input data
-print(X_train.head())
+# print(X_train.head())
 
 # multi-class target variable
-print(np.unique(y_train))
+# print(np.unique(y_train))
 
 
 #time series concatenation
 steps = [
     ("concatenate", ColumnConcatenator()),
-    ("classify", TimeSeriesForestClassifier(n_estimators=10, n_jobs=-1)),
+    ("classify", TimeSeriesForestClassifier(n_estimators=50, n_jobs=-1)),
 ]
 clf = Pipeline(steps)
 
